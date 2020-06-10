@@ -32,8 +32,9 @@ public void OnServerCrash()
 	CloseHandle(hFile);
 }
 
-public void OnMapStart()
+public void OnClientPutInServer(int iClient)
 {
+	if(IsFakeClient(iClient)) return;
 	char sPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, sPath, sizeof sPath, FILE_PATH);
 
@@ -44,13 +45,7 @@ public void OnMapStart()
 		CloseHandle(hFile);
 		DeleteFile(sPath);
 
-		LogMessage("[Cassandra] Create timer after...");
-		CreateTimer(5.0, ftimer, _);
+		LogMessage("Change map after crash: %s", g_szMap);
+		ForceChangeLevel(g_szMap, "Server Crash");
 	}
-}
-
-Action ftimer(Handle hTimer, any data)
-{
-	LogMessage("[Cassandra] Change map after crash: %s", g_szMap);
-	ForceChangeLevel(g_szMap, "Server Crash");
 }
