@@ -5,6 +5,7 @@
 #define FILE_PATH 		"data/crash_lastmap.txt"
 
 static char g_szMap[256];
+static bool g_bFirst = false;
 
 public Plugin myinfo =
 {
@@ -35,10 +36,11 @@ public void OnServerCrash()
 public void OnClientPutInServer(int iClient)
 {
 	if(IsFakeClient(iClient)) return;
+
 	char sPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, sPath, sizeof sPath, FILE_PATH);
 
-	if(FileExists(sPath))
+	if(!g_bFirst && FileExists(sPath))
 	{
 		Handle hFile = OpenFile(sPath,"r");
 		ReadFileLine(hFile, g_szMap, sizeof(g_szMap));
@@ -48,4 +50,6 @@ public void OnClientPutInServer(int iClient)
 		LogMessage("Change map after crash: %s", g_szMap);
 		ForceChangeLevel(g_szMap, "Server Crash");
 	}
+
+	g_bFirst = true;
 }
